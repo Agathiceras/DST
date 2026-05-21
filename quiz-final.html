@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Quiz — Kodland</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-main: #e8dff5;
+    --bg-grid: #ddd4ec;
+    --window-bg: #f5f0fa;
+    --window-border: #c4b5d9;
+    --window-header: #d4c8e8;
+    --accent-purple: #9b8bb8;
+    --accent-lavender: #b8a9d4;
+    --text-dark: #3d3252;
+    --text-medium: #5c4f73;
+    --text-light: #8a7ba3;
+    --sparkle: #f0d860;
+    --correct-green: #7bc67e;
+    --correct-bg: #e8f5e9;
+    --correct-border: #a5d6a7;
+    --wrong-red: #e57373;
+    --wrong-bg: #fce4ec;
+    --wrong-border: #ef9a9a;
+    --btn-primary: #9b8bb8;
+    --btn-hover: #8577a5;
+    --selected-bg: #ede7f6;
+    --selected-border: #9b8bb8;
+    --scale-1: #e57373;
+    --scale-2: #ffb74d;
+    --scale-3: #ffd54f;
+    --scale-4: #aed581;
+    --scale-5: #7bc67e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background-color: var(--bg-main);
+    background-image:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; color: var(--text-dark);
+  }
+
+  .quiz-container { max-width: 620px; width: 100%; }
+
+  .window-frame {
+    background: var(--window-bg);
+    border: 2px solid var(--window-border);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 4px 4px 0px var(--window-border), 8px 8px 0px rgba(155,139,184,0.15);
+    animation: windowAppear 0.5s ease;
+  }
+
+  @keyframes windowAppear {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .window-header {
+    background: var(--window-header);
+    padding: 12px 18px; display: flex; align-items: center; gap: 8px;
+    border-bottom: 2px solid var(--window-border);
+  }
+
+  .window-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--accent-purple); background: transparent;
+  }
+
+  .window-title {
+    flex: 1; text-align: center; font-family: 'Baloo 2', cursive;
+    font-size: 0.85rem; font-weight: 700; color: var(--text-medium);
+  }
+
+  .window-body { padding: 32px 28px; }
+
+  .sparkle {
+    display: inline-block; color: var(--sparkle); font-size: 1.4rem;
+    animation: sparkleRotate 3s ease-in-out infinite;
+  }
+  .sparkle:nth-child(2) { animation-delay: 0.5s; }
+  .sparkle:nth-child(3) { animation-delay: 1s; }
+
+  @keyframes sparkleRotate {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(15deg); }
+  }
+
+  .screen-title {
+    font-family: 'Baloo 2', cursive; font-size: 1.7rem; font-weight: 800;
+    color: var(--text-dark); text-align: center; margin-bottom: 6px; line-height: 1.2;
+  }
+
+  .screen-subtitle {
+    text-align: center; font-size: 0.92rem; font-weight: 500;
+    color: var(--text-medium); margin-bottom: 28px; line-height: 1.5;
+  }
+
+  .input-field {
+    width: 100%; padding: 13px 16px; border-radius: 12px;
+    border: 2px solid var(--window-border); background: #fff;
+    color: var(--text-dark); font-family: 'Quicksand', sans-serif;
+    font-size: 0.95rem; font-weight: 600; margin-bottom: 10px;
+    outline: none; transition: border-color 0.3s;
+  }
+  .input-field::placeholder { color: var(--text-light); font-weight: 500; }
+  .input-field:focus { border-color: var(--accent-purple); }
+
+  .btn-primary {
+    width: 100%; padding: 13px; border-radius: 12px;
+    border: 2px solid var(--btn-primary); background: var(--btn-primary);
+    color: #fff; font-family: 'Baloo 2', cursive;
+    font-size: 1.05rem; font-weight: 700; cursor: pointer;
+    transition: all 0.25s; margin-top: 8px;
+  }
+  .btn-primary:hover { background: var(--btn-hover); border-color: var(--btn-hover); transform: translateY(-2px); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+  .progress-section { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .progress-bar { flex: 1; height: 8px; background: var(--window-border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent-purple); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-text { font-size: 0.75rem; font-weight: 700; color: var(--text-light); white-space: nowrap; }
+
+  .q-badge {
+    display: inline-block; font-family: 'Baloo 2', cursive;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--accent-purple); margin-bottom: 10px;
+  }
+
+  .q-hint {
+    font-size: 0.8rem; font-weight: 600; color: var(--text-light);
+    margin-bottom: 16px; font-style: italic;
+  }
+
+  .q-text {
+    font-size: 1.05rem; font-weight: 700; color: var(--text-dark);
+    line-height: 1.5; margin-bottom: 8px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .option-btn {
+    width: 100%; padding: 13px 16px; border-radius: 12px;
+    border: 2px solid var(--window-border); background: #fff;
+    color: var(--text-dark); font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem; font-weight: 600; text-align: left;
+    cursor: pointer; transition: all 0.2s; line-height: 1.4;
+  }
+  .option-btn:hover:not(.locked) { border-color: var(--accent-purple); background: #f0eaf8; }
+  .option-btn.selected { border-color: var(--selected-border); background: var(--selected-bg); }
+  .option-btn.locked { cursor: default; opacity: 0.6; }
+
+  .btn-next {
+    margin-top: 16px; width: 100%; padding: 12px; border-radius: 12px;
+    border: 2px solid var(--window-border); background: var(--window-header);
+    color: var(--text-dark); font-family: 'Baloo 2', cursive;
+    font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-next:hover { background: var(--accent-lavender); color: #fff; }
+
+  .survey-title {
+    font-family: 'Baloo 2', cursive; font-size: 1.3rem; font-weight: 800;
+    color: var(--text-dark); text-align: center; margin-bottom: 4px;
+  }
+  .survey-subtitle { text-align: center; font-size: 0.85rem; color: var(--text-medium); margin-bottom: 24px; }
+  .survey-question { margin-bottom: 22px; }
+  .survey-q-text { font-size: 0.92rem; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; line-height: 1.4; }
+  .scale-row { display: flex; gap: 6px; align-items: center; }
+  .scale-label { font-size: 0.7rem; font-weight: 600; color: var(--text-light); min-width: 55px; }
+  .scale-label.right { text-align: right; }
+
+  .scale-btn {
+    flex: 1; padding: 10px 0; border-radius: 10px;
+    border: 2px solid var(--window-border); background: #fff;
+    font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 700;
+    color: var(--text-medium); cursor: pointer; transition: all 0.2s;
+  }
+  .scale-btn:hover { border-color: var(--accent-purple); background: #f0eaf8; }
+  .scale-btn.selected-1 { border-color: var(--scale-1); background: #fce4ec; color: var(--scale-1); }
+  .scale-btn.selected-2 { border-color: var(--scale-2); background: #fff3e0; color: #e65100; }
+  .scale-btn.selected-3 { border-color: var(--scale-3); background: #fffde7; color: #f57f17; }
+  .scale-btn.selected-4 { border-color: var(--scale-4); background: #f1f8e9; color: #558b2f; }
+  .scale-btn.selected-5 { border-color: var(--scale-5); background: var(--correct-bg); color: #2e7d32; }
+
+  .open-textarea {
+    width: 100%; padding: 12px 14px; border-radius: 12px;
+    border: 2px solid var(--window-border); background: #fff;
+    color: var(--text-dark); font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem; font-weight: 500; min-height: 80px;
+    resize: vertical; outline: none; transition: border-color 0.3s;
+  }
+  .open-textarea:focus { border-color: var(--accent-purple); }
+  .open-textarea::placeholder { color: var(--text-light); }
+
+  .results-section { text-align: center; }
+
+  .score-display {
+    margin: 20px auto; width: 130px; height: 130px; border-radius: 50%;
+    border: 6px solid var(--accent-purple);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; background: #fff;
+  }
+  .score-display.passed-ring { border-color: var(--correct-green); }
+  .score-display.failed-ring { border-color: var(--wrong-red); }
+
+  .score-number {
+    font-family: 'Baloo 2', cursive; font-size: 2.4rem;
+    font-weight: 800; color: var(--text-dark); line-height: 1;
+  }
+  .score-label { font-size: 0.75rem; font-weight: 700; color: var(--text-light); }
+
+  .result-message {
+    font-size: 0.95rem; font-weight: 600;
+    color: var(--text-medium); margin-top: 8px; line-height: 1.6;
+  }
+
+  .pass-badge {
+    display: inline-block; padding: 6px 20px; border-radius: 20px;
+    font-family: 'Baloo 2', cursive; font-size: 0.9rem; font-weight: 700; margin-top: 16px;
+  }
+  .pass-badge.passed { background: var(--correct-bg); color: #2e7d32; border: 2px solid var(--correct-border); }
+  .pass-badge.failed { background: var(--wrong-bg); color: #c62828; border: 2px solid var(--wrong-border); }
+
+  .btn-retry {
+    margin-top: 20px; width: 100%; padding: 14px; border-radius: 12px;
+    border: 2px solid var(--wrong-red); background: var(--wrong-bg);
+    color: #c62828; font-family: 'Baloo 2', cursive;
+    font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.25s;
+  }
+  .btn-retry:hover { background: #f8bbd0; transform: translateY(-2px); }
+
+  .status-text { margin-top: 16px; font-size: 0.8rem; color: var(--text-light); font-weight: 600; }
+
+  .footer-brand {
+    text-align: center; padding: 10px; font-size: 0.75rem;
+    font-weight: 700; color: var(--text-light); letter-spacing: 1px;
+  }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+
+  <div id="nameScreen" class="window-frame">
+    <div class="window-header">
+      <div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div>
+      <div class="window-title">Kodland</div>
+    </div>
+    <div class="window-body">
+      <div style="text-align:center;margin-bottom:8px;">
+        <span class="sparkle">&#10022;</span>&nbsp;<span class="sparkle">&#10022;</span>&nbsp;<span class="sparkle">&#10022;</span>
+      </div>
+      <div class="screen-title">It's time to test your knowledge!</div>
+      <p class="screen-subtitle">
+        Take this short 10-question quiz to test your knowledge and complete the training. The minimum passing score is 8 out of 10.
+      </p>
+      <input type="text" id="tutorName" class="input-field" placeholder="Your full name" />
+      <input type="email" id="tutorEmail" class="input-field" placeholder="Your Kodland email (e.g. name@kodland.team)" />
+      <button class="btn-primary" id="btnStart" disabled onclick="startQuiz()">Let's Start! &#8594;</button>
+    </div>
+    <div class="footer-brand">Kodland</div>
+  </div>
+
+  <div id="quizScreen" class="hidden"></div>
+  <div id="surveyScreen" class="hidden"></div>
+  <div id="resultsScreen" class="hidden"></div>
+
+</div>
+
+<script>
+var GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+var PASSING_SCORE = 8;
+
+// type: "single" = 1 correct answer, "multiple" = 2 correct answers, "truefalse" = 1 correct
+var questions = [
+  {
+    type: "truefalse", tag: "True or False",
+    text: "\"You're so talented!\" is an example of encouragement.",
+    options: ["True", "False"],
+    correct: [1]
+  },
+  {
+    type: "multiple", tag: "Multiple Choice",
+    text: "What risks come with using ONLY praise and no encouragement? (Select 2)",
+    options: [
+      "Students become more independent",
+      "Students start avoiding challenges to protect their \"talented\" identity",
+      "Students stop listening to the tutor entirely",
+      "Students become dependent on external validation"
+    ],
+    correct: [1, 3]
+  },
+  {
+    type: "single", tag: "Single Answer",
+    text: "The most important element of good encouragement is:",
+    options: [
+      "Being enthusiastic",
+      "Being specific about what the student did well and why",
+      "Using positive adjectives",
+      "Comparing with other students' work"
+    ],
+    correct: [1]
+  },
+  {
+    type: "truefalse", tag: "True or False",
+    text: "It's ok to use both praise and encouragement in your lessons.",
+    options: ["True", "False"],
+    correct: [0]
+  },
+  {
+    type: "multiple", tag: "Multiple Choice",
+    text: "Which of these responses are good examples of encouragement? (Select 2)",
+    options: [
+      "\"Awesome!\"",
+      "\"I can see your sprite changes direction when it hits the wall \u2014 that conditional logic is solid. How did you figure that out?\"",
+      "\"Looks good, keep going.\"",
+      "\"You used a loop to repeat the animation instead of copying blocks \u2014 that\u2019s efficient coding. Nice thinking!\""
+    ],
+    correct: [1, 3]
+  },
+  {
+    type: "single", tag: "Single Answer",
+    text: "A student writes code with a bug. What is the BEST tutor response?",
+    options: [
+      "\"That's wrong. Here's the fix.\"",
+      "\"You're close \u2014 can you spot which line might be causing the issue?\"",
+      "\"Don't worry about it, let's move on.\"",
+      "\"Who else got it right?\""
+    ],
+    correct: [1]
+  },
+  {
+    type: "truefalse", tag: "True or False",
+    text: "Making mistakes on purpose as a tutor can help students lose their fear of errors.",
+    options: ["True", "False"],
+    correct: [0]
+  },
+  {
+    type: "multiple", tag: "Multiple Choice",
+    text: "Which of these are examples of \"Normalize the error\"? (Select 2)",
+    options: [
+      "\"Can you find where it went off track?\"",
+      "\"Mistakes are proof you're trying \u2014 that's exactly what we want.\"",
+      "\"I'm going to solve this \u2014 your job is to catch me if I make a mistake.\"",
+      "\"Don\u2019t erase that \u2014 let\u2019s look at it. There\u2019s something useful in there.\""
+    ],
+    correct: [1, 3]
+  },
+  {
+    type: "single", tag: "Single Answer",
+    text: "What should you NEVER do when a student makes a mistake?",
+    options: [
+      "Ask them to explain their reasoning",
+      "Use it as a learning opportunity for the group",
+      "Publicly point out the mistake using the student's name as a negative example",
+      "Normalize the error with positive framing"
+    ],
+    correct: [2]
+  },
+  {
+    type: "truefalse", tag: "True or False",
+    text: "If a student makes a mistake, the fastest way to help is to give them the correct answer immediately.",
+    options: ["True", "False"],
+    correct: [1]
+  }
+];
+
+var currentQ = 0;
+var score = 0;
+var answers = [];
+var tutorName = "";
+var tutorEmail = "";
+var surveyAnswers = { confidence: 0, format: 0, helpfulness: 0, comments: "" };
+var selectedOptions = [];
+
+var nameInput = document.getElementById("tutorName");
+var emailInput = document.getElementById("tutorEmail");
+var btnStart = document.getElementById("btnStart");
+
+function checkInputs() {
+  btnStart.disabled = !(nameInput.value.trim() && emailInput.value.trim());
+}
+nameInput.addEventListener("input", checkInputs);
+emailInput.addEventListener("input", checkInputs);
+
+function startQuiz() {
+  tutorName = nameInput.value.trim();
+  tutorEmail = emailInput.value.trim();
+  try {
+    localStorage.setItem("kodland_tutor_name", tutorName);
+    localStorage.setItem("kodland_tutor_email", tutorEmail);
+  } catch(e) {}
+  document.getElementById("nameScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  renderQuestion();
+}
+
+function restartQuiz() {
+  currentQ = 0;
+  score = 0;
+  answers = [];
+  selectedOptions = [];
+  surveyAnswers = { confidence: 0, format: 0, helpfulness: 0, comments: "" };
+  document.getElementById("resultsScreen").classList.add("hidden");
+  document.getElementById("resultsScreen").innerHTML = "";
+  document.getElementById("quizScreen").classList.remove("hidden");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q = questions[currentQ];
+  var pct = (currentQ / questions.length) * 100;
+  selectedOptions = [];
+  var isMultiple = q.type === "multiple";
+  var requiredCount = isMultiple ? 2 : 1;
+
+  var hint = "";
+  if (isMultiple) {
+    hint = '<div class="q-hint">Select 2 answers</div>';
+  }
+
+  var optionsHTML = "";
+  for (var i = 0; i < q.options.length; i++) {
+    optionsHTML += '<button class="option-btn" id="opt-' + i + '" onclick="selectOption(' + i + ',' + requiredCount + ')">' + q.options[i] + '</button>';
+  }
+
+  document.getElementById("quizScreen").innerHTML =
+    '<div class="window-frame">' +
+      '<div class="window-header">' +
+        '<div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div>' +
+        '<div class="window-title">Knowledge Check</div>' +
+      '</div>' +
+      '<div class="window-body">' +
+        '<div class="progress-section">' +
+          '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="progress-text">' + (currentQ + 1) + ' / ' + questions.length + '</div>' +
+        '</div>' +
+        '<div class="q-badge">' + q.tag + ' \u2014 Question ' + (currentQ + 1) + '</div>' +
+        '<div class="q-text">' + q.text + '</div>' +
+        hint +
+        '<div class="options" id="optionsContainer">' + optionsHTML + '</div>' +
+        '<button class="btn-next" id="btnNext" style="display:none;" onclick="nextQuestion()">' +
+          (currentQ < questions.length - 1 ? 'Next Question \u2192' : 'Continue to Feedback \u2192') +
+        '</button>' +
+      '</div>' +
+      '<div class="footer-brand">Kodland</div>' +
+    '</div>';
+}
+
+function selectOption(idx, requiredCount) {
+  if (requiredCount === 1) {
+    // Single select: clear all, select this one
+    selectedOptions = [idx];
+    var btns = document.querySelectorAll(".option-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.remove("selected");
+    }
+    document.getElementById("opt-" + idx).classList.add("selected");
+  } else {
+    // Multiple select: toggle
+    var pos = selectedOptions.indexOf(idx);
+    if (pos > -1) {
+      // Deselect
+      selectedOptions.splice(pos, 1);
+      document.getElementById("opt-" + idx).classList.remove("selected");
+    } else {
+      if (selectedOptions.length < requiredCount) {
+        // Select
+        selectedOptions.push(idx);
+        document.getElementById("opt-" + idx).classList.add("selected");
+      } else {
+        // Already at max — deselect oldest, select new
+        var oldest = selectedOptions.shift();
+        document.getElementById("opt-" + oldest).classList.remove("selected");
+        selectedOptions.push(idx);
+        document.getElementById("opt-" + idx).classList.add("selected");
+      }
+    }
+  }
+
+  // Show/hide next button
+  if (selectedOptions.length === requiredCount) {
+    document.getElementById("btnNext").style.display = "block";
+  } else {
+    document.getElementById("btnNext").style.display = "none";
+  }
+}
+
+function nextQuestion() {
+  var q = questions[currentQ];
+  var requiredCount = q.type === "multiple" ? 2 : 1;
+  if (selectedOptions.length !== requiredCount) return;
+
+  // Check correctness
+  var isCorrect = false;
+  if (requiredCount === 1) {
+    isCorrect = selectedOptions[0] === q.correct[0];
+  } else {
+    // Both must match (order doesn't matter)
+    var sorted = selectedOptions.slice().sort();
+    var correctSorted = q.correct.slice().sort();
+    isCorrect = sorted.length === correctSorted.length && sorted[0] === correctSorted[0] && sorted[1] === correctSorted[1];
+  }
+
+  if (isCorrect) score++;
+
+  var selectedTexts = [];
+  for (var i = 0; i < selectedOptions.length; i++) {
+    selectedTexts.push(q.options[selectedOptions[i]]);
+  }
+  var correctTexts = [];
+  for (var j = 0; j < q.correct.length; j++) {
+    correctTexts.push(q.options[q.correct[j]]);
+  }
+
+  answers.push({
+    question: q.text,
+    selected: selectedTexts,
+    correct: correctTexts,
+    isCorrect: isCorrect
+  });
+
+  currentQ++;
+  if (currentQ < questions.length) {
+    renderQuestion();
+  } else {
+    showSurvey();
+  }
+}
+
+function showSurvey() {
+  document.getElementById("quizScreen").classList.add("hidden");
+  var surveyDiv = document.getElementById("surveyScreen");
+  surveyDiv.classList.remove("hidden");
+
+  var scaleFields = [
+    { id: "confidence", label: "After this training, how confident do you feel about delivering more motivating classes for your students?", leftLabel: "Not confident", rightLabel: "Very confident" },
+    { id: "format", label: "How would you rate the format and structure of this self-study material?", leftLabel: "Bad", rightLabel: "Excellent" },
+    { id: "helpfulness", label: "How helpful was the training in preparing you for actual classes with students?", leftLabel: "Unhelpful", rightLabel: "Very helpful" }
+  ];
+
+  var scaleHTML = "";
+  for (var s = 0; s < scaleFields.length; s++) {
+    var f = scaleFields[s];
+    var btns = "";
+    for (var n = 1; n <= 5; n++) {
+      btns += '<button class="scale-btn" id="' + f.id + '-' + n + '" onclick="setSurvey(\'' + f.id + '\',' + n + ')">' + n + '</button>';
+    }
+    scaleHTML +=
+      '<div class="survey-question">' +
+        '<div class="survey-q-text">' + f.label + '</div>' +
+        '<div class="scale-row">' +
+          '<span class="scale-label">' + f.leftLabel + '</span>' +
+          btns +
+          '<span class="scale-label right">' + f.rightLabel + '</span>' +
+        '</div>' +
+      '</div>';
+  }
+
+  surveyDiv.innerHTML =
+    '<div class="window-frame">' +
+      '<div class="window-header">' +
+        '<div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div>' +
+        '<div class="window-title">Kodland</div>' +
+      '</div>' +
+      '<div class="window-body">' +
+        '<div style="text-align:center;margin-bottom:6px;">' +
+          '<span class="sparkle">&#10022;</span>&nbsp;<span class="sparkle">&#10022;</span>' +
+        '</div>' +
+        '<div class="survey-title">Let us know what you think!</div>' +
+        '<p class="survey-subtitle">Your feedback helps us improve this training.</p>' +
+        scaleHTML +
+        '<div class="survey-question">' +
+          '<div class="survey-q-text">Is there anything else you\'d like to share about the training?</div>' +
+          '<textarea class="open-textarea" id="surveyComments" placeholder="Your thoughts... (optional)"></textarea>' +
+        '</div>' +
+        '<button class="btn-primary" onclick="submitAll()">See My Results &#8594;</button>' +
+      '</div>' +
+      '<div class="footer-brand">Kodland</div>' +
+    '</div>';
+}
+
+function setSurvey(field, value) {
+  surveyAnswers[field] = value;
+  for (var i = 1; i <= 5; i++) {
+    var btn = document.getElementById(field + "-" + i);
+    btn.className = "scale-btn";
+    if (i <= value) btn.classList.add("selected-" + i);
+  }
+}
+
+function submitAll() {
+  var commentsEl = document.getElementById("surveyComments");
+  surveyAnswers.comments = commentsEl ? commentsEl.value.trim() : "";
+
+  document.getElementById("surveyScreen").classList.add("hidden");
+  document.getElementById("surveyScreen").innerHTML = "";
+  var resultsDiv = document.getElementById("resultsScreen");
+  resultsDiv.classList.remove("hidden");
+
+  var passed = score >= PASSING_SCORE;
+
+  if (passed) {
+    resultsDiv.innerHTML =
+      '<div class="window-frame">' +
+        '<div class="window-header">' +
+          '<div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div>' +
+          '<div class="window-title">Kodland</div>' +
+        '</div>' +
+        '<div class="window-body results-section">' +
+          '<div style="margin-bottom:4px;">' +
+            '<span class="sparkle">&#10022;</span>&nbsp;<span class="sparkle">&#10022;</span>&nbsp;<span class="sparkle">&#10022;</span>' +
+          '</div>' +
+          '<div class="screen-title">\uD83C\uDF89 Training Complete!</div>' +
+          '<div class="score-display passed-ring">' +
+            '<div class="score-number">' + score + '/' + questions.length + '</div>' +
+            '<div class="score-label">correct</div>' +
+          '</div>' +
+          '<div class="pass-badge passed">\u2705 PASSED \u2014 Congratulations!</div>' +
+          '<p class="result-message" style="margin-top:16px;">' +
+            'Amazing job, ' + tutorName + '! You\u2019ve successfully completed the training. ' +
+            'You\u2019re now ready to inspire, encourage, and turn every mistake into a powerful learning moment for your students.' +
+          '</p>' +
+          '<p id="statusText" class="status-text">Saving your results...</p>' +
+        '</div>' +
+        '<div class="footer-brand">Kodland</div>' +
+      '</div>';
+  } else {
+    resultsDiv.innerHTML =
+      '<div class="window-frame">' +
+        '<div class="window-header">' +
+          '<div class="window-dot"></div><div class="window-dot"></div><div class="window-dot"></div>' +
+          '<div class="window-title">Kodland</div>' +
+        '</div>' +
+        '<div class="window-body results-section">' +
+          '<div style="margin-bottom:4px;">' +
+            '<span class="sparkle">&#10022;</span>&nbsp;<span class="sparkle">&#10022;</span>' +
+          '</div>' +
+          '<div class="screen-title">Almost there!</div>' +
+          '<div class="score-display failed-ring">' +
+            '<div class="score-number">' + score + '/' + questions.length + '</div>' +
+            '<div class="score-label">correct</div>' +
+          '</div>' +
+          '<div class="pass-badge failed">\u274C You need ' + PASSING_SCORE + '/' + questions.length + ' to pass</div>' +
+          '<p class="result-message" style="margin-top:16px;">' +
+            'Don\u2019t worry, ' + tutorName + '! Review the training material and give it another try. ' +
+            'You need at least ' + PASSING_SCORE + ' correct answers to complete the training successfully. You\u2019ve got this!' +
+          '</p>' +
+          '<button class="btn-retry" onclick="restartQuiz()">\uD83D\uDD04 Retake the Quiz</button>' +
+          '<p id="statusText" class="status-text">Saving your attempt...</p>' +
+        '</div>' +
+        '<div class="footer-brand">Kodland</div>' +
+      '</div>';
+  }
+
+  sendResults(passed);
+}
+
+function sendResults(passed) {
+  var statusEl = document.getElementById("statusText");
+  var payload = {
+    tutorName: tutorName,
+    tutorEmail: tutorEmail,
+    sectionId: "final-quiz",
+    score: score,
+    totalQuestions: questions.length,
+    percentage: Math.round((score / questions.length) * 100),
+    passed: passed,
+    answers: answers,
+    feedback: surveyAnswers
+  };
+
+  if (GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+    statusEl.textContent = "\u26A0\uFE0F Google Sheets URL not configured yet.";
+    console.log("Quiz + Survey results:", JSON.stringify(payload, null, 2));
+    return;
+  }
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).then(function() {
+    statusEl.textContent = "\u2705 Results saved successfully!";
+  }).catch(function(err) {
+    statusEl.textContent = "\u26A0\uFE0F Could not save results. Check your connection.";
+    console.error(err);
+  });
+}
+</script>
+
+</body>
+</html>
