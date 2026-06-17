@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Opening Scripts - Kodland Tutor Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .logo {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #b0b0b0;
+            font-weight: 400;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        .question-group {
+            margin-bottom: 40px;
+        }
+
+        .question-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .question-label {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .option {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .option-label::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 2px solid #7c3aed;
+            border-radius: 50%;
+            margin-right: 12px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            background: white;
+        }
+
+        .option input[type="radio"]:checked + .option-label {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            border-color: #7c3aed;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        .option input[type="radio"]:checked + .option-label::before {
+            background: white;
+            box-shadow: inset 0 0 0 6px #7c3aed;
+        }
+
+        .option-label:hover {
+            border-color: #7c3aed;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 30px;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+            font-family: 'Exo 2', sans-serif;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1a1a2e;
+        }
+
+        .result-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .script-step {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-left: 5px solid #7c3aed;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .script-step:hover {
+            background: #f0f0f8;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-family: 'Exo 2', sans-serif;
+        }
+
+        .step-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        .tutor-action {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(109, 40, 217, 0.05) 100%);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #7c3aed;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tech-item {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: #7c3aed;
+            background: white;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: #7c3aed;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-family: 'Exo 2', sans-serif;
+        }
+
+        .tech-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .why-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(109, 40, 217, 0.02) 100%);
+            border-left: 5px solid #7c3aed;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .form-container,
+            .result-container {
+                padding: 30px 20px;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .submit-btn {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🎮 KODLAND</div>
+            <h1>Class Opening Scripts</h1>
+            <p class="subtitle">Generate personalized scripts to start your Minecraft lessons with confidence</p>
+        </header>
+
+        <div class="form-container">
+            <div class="question-group">
+                <label class="question-label">1. What's your group's personality?</label>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="p1" name="p" value="shy">
+                        <label for="p1" class="option-label">Shy & quiet</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="p2" name="p" value="chatty">
+                        <label for="p2" class="option-label">Chatty & energetic</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="p3" name="p" value="mixed">
+                        <label for="p3" class="option-label">Mixed energy</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <label class="question-label">2. How much time do you have?</label>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="t1" name="t" value="short">
+                        <label for="t1" class="option-label">1-2 minutes</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="t2" name="t" value="medium">
+                        <label for="t2" class="option-label">3-5 minutes</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="t3" name="t" value="long">
+                        <label for="t3" class="option-label">5+ minutes</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <label class="question-label">3. What interests your students most?</label>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="i1" name="i" value="code">
+                        <label for="i1" class="option-label">Code & game development</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="i2" name="i" value="building">
+                        <label for="i2" class="option-label">World design & architecture</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="i3" name="i" value="gaming">
+                        <label for="i3" class="option-label">Gaming & entertainment</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="i4" name="i" value="mixed">
+                        <label for="i4" class="option-label">Mix of everything</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-group">
+                <label class="question-label">4. Your comfort level with class openings?</label>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" id="c1" name="c" value="new">
+                        <label for="c1" class="option-label">New—give me exact words</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="c2" name="c" value="comf">
+                        <label for="c2" class="option-label">Comfortable—give me guidance</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" id="c3" name="c" value="exp">
+                        <label for="c3" class="option-label">Experienced—validate my approach</label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="generateScript()">Generate My Opening Script</button>
+        </div>
+
+        <div class="result-container" id="result">
+            <div class="result-title" id="result-title"></div>
+            <div class="result-subtitle" id="result-subtitle"></div>
+
+            <div class="section">
+                <h2 class="section-title">Your Step-by-Step Script</h2>
+                <div id="steps"></div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Why This Works for Your Group</h2>
+                <div class="why-box" id="why-box"></div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Technical Setup</h2>
+                <div class="tech-grid" id="tech-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scripts = {
+            'shy-short-code-new': {
+                title: 'Welcoming Energy Check',
+                time: '1-2 minutes',
+                steps: [
+                    {
+                        num: '1',
+                        title: 'Welcome & Camera Connection',
+                        text: '"Hello my students, I\'m so happy to see you today. I\'ve missed you." [Look directly at camera, genuine smile] Put a heart reaction in chat so they see your warmth.',
+                        action: 'You: React with heart (❤️) in Zoom reactions or Google Classroom'
+                    },
+                    {
+                        num: '2',
+                        title: 'Energy Check with Reactions',
+                        text: '"Now I want to know how you\'re feeling. How\'s our energy today? I put a heart because I\'m very happy. What reaction will you put?" Wait 10-15 seconds.',
+                        action: 'Students: React with emoji (😊 happy, 😴 tired, 🤔 confused, etc.)'
+                    },
+                    {
+                        num: '3',
+                        title: 'Name & Celebrate Reactions',
+                        text: '"Matias, I see you put a happy face—nice! Sofia, a surprised face—does that mean you\'re excited about what we\'ll learn today?" [Pause, acknowledge each reaction individually]',
+                        action: 'You: Mention 2-3 students by name and what their reaction shows'
+                    }
+                ],
+                why: 'Shy students need to feel that: (1) You\'re genuinely happy to see them, (2) They can participate without unmuting (reactions are safe), (3) You notice them individually by name, (4) This is a judgment-free space where participating is celebrated.',
+                tech: [
+                    {label: 'Camera', desc: 'ON, looking at camera. Your presence matters.'},
+                    {label: 'Reactions', desc: 'You put heart first (model it). Then they choose.'},
+                    {label: 'Chat', desc: 'Optional backup for shy students.'},
+                    {label: 'Microphone', desc: 'You speak warmly. No pressure to unmute.'}
+                ]
+            },
+            'chatty-short-code-new': {
+                title: 'High-Energy Opening & Quick Challenge',
+                time: '1-2 minutes',
+                steps: [
+                    {
+                        num: '1',
+                        title: 'Explosive Welcome',
+                        text: '"HEY! What\'s up? I\'m REALLY excited to see you. The energy here is contagious and I NEED it for what we\'re doing today. Are you ready?"',
+                        action: 'You: Speak with HIGH energy, big gestures, genuine excitement'
+                    },
+                    {
+                        num: '2',
+                        title: 'Quick Energy Check',
+                        text: '"Quick reaction: Who did something EPIC with code this week? TELL ME! Don\'t think—just say the first thing that comes to your head."',
+                        action: 'Students: Unmuted OR chat. Go fast. No long pauses.'
+                    },
+                    {
+                        num: '3',
+                        title: 'Celebrate Loudly',
+                        text: '"YES! [Student], that\'s what I\'m talking about. That kind of CREATIVE thinking is exactly what you need for today."',
+                        action: 'You: Affirm with energy, use their idea to hype the class'
+                    }
+                ],
+                why: 'Chatty students thrive on ENERGY and SPEED. Fast exchanges, celebrating ideas loudly, and competitive framing keeps them engaged from minute one.',
+                tech: [
+                    {label: 'Camera', desc: 'ON with BIG expressions. Energy is contagious.'},
+                    {label: 'Microphone', desc: 'Unmuted. Let them shout answers. Overlapping is fine.'},
+                    {label: 'Chat', desc: 'Backup for those who want to type.'},
+                    {label: 'Reactions', desc: 'Quick polls: "Thumbs up if ready?"'}
+                ]
+            },
+            'mixed-short-code-new': {
+                title: 'Inclusive Energy + Flexible Response',
+                time: '1-2 minutes',
+                steps: [
+                    {
+                        num: '1',
+                        title: 'Warm Welcome for Everyone',
+                        text: '"Hello everyone. I\'m happy to see you today. Each one of you is here because you want to learn something new. That\'s what I love. So we\'re going to do this together, okay?"',
+                        action: 'You: Camera on, smile, speak at medium pace'
+                    },
+                    {
+                        num: '2',
+                        title: 'Energy Check (All Methods)',
+                        text: '"How are you feeling today? Some of you can react with an emoji. Others can write in the chat. Others can raise your hand. Any way is fine. I just want to know that we\'re here together and present."',
+                        action: 'Students: Reactions AND chat AND hands. All options valid.'
+                    },
+                    {
+                        num: '3',
+                        title: 'Celebrate Mix',
+                        text: '"I see happy faces, concentrated faces, some writing. PERFECT. That\'s what I want—people in different ways, all learning. Matias with his smile, Sofia writing, Lucas raising his hand. Everyone is needed."',
+                        action: 'You: Name students with different participation styles'
+                    }
+                ],
+                why: 'Mixed groups have shy AND chatty kids. Offer MULTIPLE ways to answer (reactions, chat, hand-raise). Celebrate each style.',
+                tech: [
+                    {label: 'Camera', desc: 'ON, warm energy'},
+                    {label: 'Reactions', desc: 'Option 1 for shy students'},
+                    {label: 'Chat', desc: 'Option 2 for others'},
+                    {label: 'Hand-raise', desc: 'Option 3 for verbal students'}
+                ]
+            }
+        };
+
+        function generateScript() {
+            const p = document.querySelector('input[name="p"]:checked')?.value;
+            const t = document.querySelector('input[name="t"]:checked')?.value;
+            const i = document.querySelector('input[name="i"]:checked')?.value;
+            const c = document.querySelector('input[name="c"]:checked')?.value;
+
+            if (!p || !t || !i || !c) {
+                alert('Please answer all 4 questions');
+                return;
+            }
+
+            const key = `${p}-${t}-${i}-${c}`;
+            const script = scripts[key] || scripts['mixed-short-code-new'];
+
+            document.getElementById('result-title').textContent = script.title;
+            document.getElementById('result-subtitle').textContent = `Timing: ${script.time}`;
+
+            let stepsHTML = '';
+            script.steps.forEach(step => {
+                stepsHTML += `
+                    <div class="script-step">
+                        <span class="step-number">Step ${step.num}</span>
+                        <div class="step-title">${step.title}</div>
+                        <div class="step-text">${step.text}</div>
+                        <div class="tutor-action">📍 ${step.action}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('steps').innerHTML = stepsHTML;
+
+            document.getElementById('why-box').textContent = script.why;
+
+            let techHTML = '';
+            script.tech.forEach(tech => {
+                techHTML += `
+                    <div class="tech-item">
+                        <div class="tech-label">${tech.label}</div>
+                        <div class="tech-desc">${tech.desc}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('tech-grid').innerHTML = techHTML;
+
+            document.getElementById('result').classList.add('show');
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
