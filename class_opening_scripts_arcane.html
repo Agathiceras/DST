@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Opening Scripts - Kodland</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: rgba(15, 20, 40, 0.9);
+            border-bottom: 2px solid #00d9ff;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            color: #00d9ff;
+            text-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(255, 0, 110, 0.2);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #00d9ff;
+            font-weight: 500;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 30px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.4s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-title {
+            text-align: center;
+        }
+
+        .slide-title h2 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .slide-title p {
+            font-size: 18px;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .question-container {
+            background: rgba(157, 78, 221, 0.08);
+            border: 2px solid #9d4edd;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+        }
+
+        .question-label {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 16px;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            position: relative;
+        }
+
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 16px;
+            border: 2px solid #9d4edd;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+            color: #e0e0e0;
+            background: rgba(157, 78, 221, 0.05);
+        }
+
+        .option-label::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            border: 2px solid #00d9ff;
+            border-radius: 2px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            background: rgba(0, 217, 255, 0.05);
+            box-shadow: 0 0 6px rgba(0, 217, 255, 0.1);
+        }
+
+        .option input[type="radio"]:checked + .option-label {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.15);
+        }
+
+        .option input[type="radio"]:checked + .option-label::before {
+            background: #00d9ff;
+            box-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
+            border-color: #00d9ff;
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0e27;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .option-label:hover {
+            border-color: #ff006e;
+            box-shadow: 0 0 8px rgba(255, 0, 110, 0.15);
+            background: rgba(255, 0, 110, 0.04);
+        }
+
+        .result-content {
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .result-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result-content::-webkit-scrollbar-track {
+            background: rgba(0, 217, 255, 0.05);
+        }
+
+        .result-content::-webkit-scrollbar-thumb {
+            background: #00d9ff;
+            border-radius: 3px;
+        }
+
+        .result-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-subtitle {
+            font-size: 12px;
+            color: #00d9ff;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .result-section {
+            margin-bottom: 20px;
+        }
+
+        .result-section-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #9d4edd;
+            padding-bottom: 8px;
+        }
+
+        .script-step {
+            background: rgba(157, 78, 221, 0.06);
+            border-left: 3px solid #ff006e;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            box-shadow: 0 0 6px rgba(157, 78, 221, 0.08);
+        }
+
+        .step-num {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff006e 0%, #9d4edd 100%);
+            color: white;
+            padding: 2px 8px;
+            font-weight: 700;
+            font-size: 11px;
+            margin-right: 8px;
+            box-shadow: 0 0 6px rgba(255, 0, 110, 0.2);
+        }
+
+        .step-title {
+            color: #00d9ff;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .why-content {
+            background: rgba(0, 217, 255, 0.06);
+            border: 1px solid #00d9ff;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: 0 0 8px rgba(0, 217, 255, 0.08);
+        }
+
+        .controls {
+            background: rgba(15, 20, 40, 0.95);
+            border-top: 2px solid #00d9ff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress {
+            font-size: 12px;
+            color: #00d9ff;
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 100%);
+            color: #0a0e27;
+            border: 2px solid #ff006e;
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Exo 2', sans-serif;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.25);
+        }
+
+        button:hover {
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: transparent;
+            color: #00d9ff;
+            border: 2px solid #00d9ff;
+        }
+
+        button.secondary:hover {
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .question-container {
+                padding: 20px;
+            }
+
+            .controls {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">KODLAND</div>
+            <h1>Class Opening Scripts</h1>
+            <p class="subtitle">Personalized tutor scripts for every group dynamic</p>
+        </header>
+
+        <div class="main">
+            <div class="slide slide-title active">
+                <h2>Welcome!</h2>
+                <p>Let's find the perfect opening script for your class</p>
+                <p style="color: #9d4edd; margin-top: 30px; font-size: 16px;">Answer 4 quick questions to get personalized guidance</p>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">1️⃣ What's your class size?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="p1" name="p" value="small">
+                            <label for="p1" class="option-label">Small (1-3 students)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="p2" name="p" value="medium">
+                            <label for="p2" class="option-label">Medium (4-8 students)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="p3" name="p" value="large">
+                            <label for="p3" class="option-label">Large (9+ students)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">2️⃣ How many lessons have you taught them?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="t1" name="t" value="first">
+                            <label for="t1" class="option-label">First lesson (new group)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="t2" name="t" value="short">
+                            <label for="t2" class="option-label">Short series (2-4 lessons)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="t3" name="t" value="ongoing">
+                            <label for="t3" class="option-label">Ongoing group (5+ lessons)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">3️⃣ What's your group's vibe?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="i1" name="i" value="shy">
+                            <label for="i1" class="option-label">Shy & reserved</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="i2" name="i" value="chatty">
+                            <label for="i2" class="option-label">Chatty & energetic</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="i3" name="i" value="gaming">
+                            <label for="i3" class="option-label">Gaming & entertainment</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="i4" name="i" value="mixed">
+                            <label for="i4" class="option-label">Mix of everything</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">4️⃣ Your comfort level with class openings?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="c1" name="c" value="new">
+                            <label for="c1" class="option-label">New—give me exact words</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="c2" name="c" value="comf">
+                            <label for="c2" class="option-label">Comfortable—give me guidance</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="c3" name="c" value="exp">
+                            <label for="c3" class="option-label">Experienced—validate my approach</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="result-content">
+                    <div class="result-title" id="result-title"></div>
+                    <div class="result-subtitle" id="result-subtitle"></div>
+
+                    <div class="result-section">
+                        <div class="result-section-title">📍 Your Script</div>
+                        <div id="steps"></div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-section-title">✨ Why This Works</div>
+                        <div class="why-content" id="why-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="progress">
+                <span id="current-slide">1</span> / <span id="total-slides">6</span>
+            </div>
+            <div class="button-group">
+                <button class="secondary" id="prev-btn" onclick="prevSlide()" disabled>← Back</button>
+                <button id="next-btn" onclick="nextSlide()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scripts = {
+            'shy-short-code-new': {
+                title: 'Welcoming Energy Check',
+                time: '1-2 minutes',
+                steps: [
+                    {num: '1', title: 'Welcome & Camera', text: '"Hello my students, I\'m so happy to see you today." [Look at camera, smile] Put a heart reaction.'},
+                    {num: '2', title: 'Energy Check', text: '"How\'s our energy today? What reaction will you put?" Wait 10-15 seconds.'},
+                    {num: '3', title: 'Celebrate', text: '"Matias, I see your happy face! Sofia, excited? That\'s what I love."'}
+                ],
+                why: 'Shy students need: (1) You\'re genuinely happy to see them, (2) Safe participation without unmuting, (3) Individual acknowledgment by name, (4) Judgment-free space.'
+            },
+            'chatty-short-code-new': {
+                title: 'High-Energy Opening',
+                time: '1-2 minutes',
+                steps: [
+                    {num: '1', title: 'Explosive Welcome', text: '"HEY! I\'m REALLY excited to see you. The energy here is contagious!"'},
+                    {num: '2', title: 'Quick Challenge', text: '"Who did something EPIC this week? TELL ME! Don\'t think—just say it!"'},
+                    {num: '3', title: 'Celebrate', text: '"YES! That\'s CREATIVE thinking is exactly what you need today."'}
+                ],
+                why: 'Chatty students thrive on ENERGY and SPEED. Fast exchanges, celebrating loudly, and competitive framing keeps engagement high.'
+            },
+            'mixed-short-code-new': {
+                title: 'Inclusive Energy',
+                time: '1-2 minutes',
+                steps: [
+                    {num: '1', title: 'Warm Welcome', text: '"Hello everyone. Each of you is here to learn something new."'},
+                    {num: '2', title: 'Energy Check (All Ways)', text: '"How are you feeling? React, write, or raise your hand. Any way is fine."'},
+                    {num: '3', title: 'Celebrate Mix', text: '"Perfect! Everyone in different ways. Everyone is needed."'}
+                ],
+                why: 'Mixed groups need MULTIPLE ways to answer (reactions, chat, hand-raise). Celebrate each style equally.'
+            }
+        };
+
+        let currentSlide = 0;
+        const totalSlides = 6;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            if (n >= slides.length) n = slides.length - 1;
+            if (n < 0) n = 0;
+            currentSlide = n;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n].classList.add('active');
+
+            document.getElementById('current-slide').textContent = n + 1;
+            document.getElementById('prev-btn').disabled = n === 0;
+            document.getElementById('next-btn').textContent = n === totalSlides - 1 ? 'Generate ✨' : 'Next →';
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else {
+                generateScript();
+            }
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function generateScript() {
+            const p = document.querySelector('input[name="p"]:checked')?.value;
+            const t = document.querySelector('input[name="t"]:checked')?.value;
+            const i = document.querySelector('input[name="i"]:checked')?.value;
+            const c = document.querySelector('input[name="c"]:checked')?.value;
+
+            if (!p || !t || !i || !c) return;
+
+            const key = `${p}-${t}-${i}-${c}`;
+            const script = scripts[key] || scripts['mixed-short-code-new'];
+
+            document.getElementById('result-title').textContent = script.title;
+            document.getElementById('result-subtitle').textContent = `⏱️ ${script.time}`;
+
+            let stepsHTML = '';
+            script.steps.forEach(step => {
+                stepsHTML += `
+                    <div class="script-step">
+                        <span class="step-num">Step ${step.num}</span>
+                        <div class="step-title">${step.title}</div>
+                        <div>"${step.text}"</div>
+                    </div>
+                `;
+            });
+            document.getElementById('steps').innerHTML = stepsHTML;
+            document.getElementById('why-box').textContent = script.why;
+        }
+
+        showSlide(0);
+    </script>
+</body>
+</html>
