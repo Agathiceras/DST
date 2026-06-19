@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oyun Zamanı: İyi Cümleleri Toplama</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(157, 78, 221, 0.06) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: rgba(15, 20, 40, 0.95);
+            border-bottom: 2px solid #00d9ff;
+            padding: 6px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 8px;
+            font-weight: 800;
+            color: #00d9ff;
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+        }
+
+        h1 {
+            font-size: 14px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            gap: 15px;
+            margin-top: 4px;
+        }
+
+        .score-box {
+            background: rgba(0, 217, 255, 0.1);
+            padding: 2px 8px;
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            font-weight: 600;
+        }
+
+        .lives-box {
+            color: #ff006e;
+            font-weight: 600;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+            gap: 20px;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Instructions Screen */
+        .instructions-screen {
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .instructions-screen h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00d9ff;
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .instructions-content {
+            background: rgba(157, 78, 221, 0.08);
+            border: 2px solid #9d4edd;
+            padding: 20px;
+            max-width: 800px;
+            margin-bottom: 20px;
+            border-radius: 0;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+        }
+
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .instruction-item {
+            text-align: left;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #d0d0d0;
+        }
+
+        .instruction-item strong {
+            color: #00d9ff;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .instruction-icon {
+            font-size: 18px;
+            margin-right: 6px;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            gap: 20px;
+        }
+
+        .phrase-section {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 300px;
+            max-width: 350px;
+        }
+
+        .phrase-card {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(157, 78, 221, 0.1) 100%);
+            border: 2px solid #9d4edd;
+            padding: 16px;
+            max-width: 350px;
+            border-radius: 0;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+            touch-action: none;
+            draggable: true;
+        }
+
+        .phrase-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+            border-color: #00d9ff;
+        }
+
+        .phrase-card.dragging {
+            opacity: 0.6;
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .phrase-number {
+            font-size: 9px;
+            color: #00d9ff;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phrase-text {
+            font-size: 12px;
+            color: #e0e0e0;
+            line-height: 1.3;
+            font-style: italic;
+        }
+
+        .drop-zones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            flex: 0 0 auto;
+            min-width: 320px;
+        }
+
+        .drop-zone {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+            border: 3px dashed #9d4edd;
+            background: rgba(157, 78, 221, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0;
+        }
+
+        .drop-zone.trash {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .drop-zone.treasure {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.05);
+        }
+
+        .drop-zone.active {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.15);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .zone-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .zone-label {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .drop-zone.trash .zone-label {
+            color: #e74c3c;
+        }
+
+        .drop-zone.treasure .zone-label {
+            color: #f39c12;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .results-screen h2 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #00d9ff;
+            margin-bottom: 16px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .score-display {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .message {
+            font-size: 13px;
+            color: #d0d0d0;
+            margin-bottom: 20px;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 10px 20px;
+            border: 2px solid #00d9ff;
+            background: transparent;
+            color: #00d9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(46, 204, 113, 0.15);
+            border: 2px solid #2ecc71;
+            padding: 20px 30px;
+            border-radius: 0;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
+            font-weight: 700;
+            color: #2ecc71;
+            font-size: 16px;
+        }
+
+        .feedback.incorrect {
+            background: rgba(231, 76, 60, 0.15);
+            border-color: #e74c3c;
+            color: #e74c3c;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(157, 78, 221, 0.2);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d9ff 0%, #9d4edd 100%);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🎮 KODLAND - OYUN ZAMANI</div>
+            <h1>İyi Cümleleri Toplama</h1>
+            <div class="game-header" id="game-header" style="display: none;">
+                <div class="score-box">Puan: <span id="score">0</span>/8</div>
+                <div class="lives-box">Canlar: <span id="lives">❤️ ❤️ ❤️</span></div>
+            </div>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress" style="width: 0%"></div>
+        </div>
+
+        <div class="main">
+            <!-- Instructions Screen -->
+            <div class="screen instructions-screen active" id="instructions-screen">
+                <h2>📚 Nasıl Oynanır</h2>
+                <div class="instructions-content">
+                    <div class="instructions-grid">
+                        <div class="instruction-item">
+                            <span class="instruction-icon">📖</span>
+                            <strong>Adım 1:</strong> Öğretmen cümlelerini birer birer göreceksiniz
+                        </div>
+                        <div class="instruction-item">
+                            <span class="instruction-icon">✨</span>
+                            <strong>Adım 2:</strong> Her cümleyi doğru alana sürükleyin
+                        </div>
+                        <div class="instruction-item">
+                            <span class="instruction-icon">🗑️</span>
+                            <strong>ÇÖPÇÜ:</strong> Öğrencileri geri dönmekten korkutan cümleler
+                        </div>
+                        <div class="instruction-item">
+                            <span class="instruction-icon">💎</span>
+                            <strong>HAZINE:</strong> Öğrencilerin kendilerini daha iyi hissetmesini sağlayan cümleler
+                        </div>
+                    </div>
+                    <div style="border-top: 1px solid #9d4edd; padding-top: 10px; text-align: center; font-size: 11px; color: #b0b0b0;">
+                        ❤️ 3 canınız var. Yanlış cevaplar 1 can kaybeder
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button onclick="startGame()">🎮 OYUNU BAŞLAT</button>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div class="screen game-screen" id="game-screen">
+                <div class="phrase-section">
+                    <div class="phrase-card" id="phrase-card" draggable="true">
+                        <div class="phrase-number" id="phrase-number"></div>
+                        <div class="phrase-text" id="phrase-text"></div>
+                    </div>
+                </div>
+
+                <div class="drop-zones">
+                    <div class="drop-zone trash" id="trash-zone">
+                        <div class="zone-icon">🗑️</div>
+                        <div class="zone-label">ÇÖPÇÜ</div>
+                    </div>
+                    <div class="drop-zone treasure" id="treasure-zone">
+                        <div class="zone-icon">💎</div>
+                        <div class="zone-label">HAZINE</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="screen results-screen" id="results-screen">
+                <h2 id="result-title"></h2>
+                <div class="score-display" id="final-score"></div>
+                <div class="message" id="result-message"></div>
+                <div class="buttons">
+                    <button onclick="resetGame()">🔄 Tekrar Oyna</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        const phrases = [
+            { id: 1, text: '"Yanlış. Bunu böyle yapman gerekirdi."', correct: 'trash' },
+            { id: 2, text: '"Neden bunu böyle inşa etmeyi seçerdin. Tekrar dene."', correct: 'trash' },
+            { id: 3, text: '"Böyle hatalar, yeterince dikkat etmediğini gösteriyor."', correct: 'trash' },
+            { id: 4, text: '"Herkes bunu doğru yaptı. Daha fazla dikkat etmen gerekiyor."', correct: 'trash' },
+            { id: 5, text: '"İlginç, kod çalışmadı. Ne oldu birlikte çözelim."', correct: 'treasure' },
+            { id: 6, text: '"Bu redstone tekrarlayıcısını yanlış yönde yerleştirdin. İşte yön neden önemli: [açıklama]. Bunu bilerek tekrar dene."', correct: 'treasure' },
+            { id: 7, text: '"Bu devre aktivasyonlanmadı. Neyi kontrol etmemiz gerektiğini düşünüyorsun? Güç kaynağını? Bağlantıları?"', correct: 'treasure' },
+            { id: 8, text: '"İlk denemen işe yaramadı, ve bu mükemmel, çünkü şimdi yapmamanız gerekenı biliyorsun. Akıllı öğrenme bu şekilde oluyor."', correct: 'treasure' }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let lives = 3;
+        let draggedElement = null;
+        let currentPhrase = null;
+
+        function startGame() {
+            document.getElementById('instructions-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            document.getElementById('game-header').style.display = 'flex';
+            
+            phrases.sort(() => Math.random() - 0.5);
+            
+            currentIndex = 0;
+            score = 0;
+            lives = 3;
+            showNextPhrase();
+            setupDragDrop();
+        }
+
+        function showNextPhrase() {
+            if (currentIndex >= phrases.length) {
+                endGame();
+                return;
+            }
+
+            currentPhrase = phrases[currentIndex];
+            document.getElementById('phrase-number').textContent = `Cümle`;
+            document.getElementById('phrase-text').textContent = currentPhrase.text;
+            document.getElementById('progress').style.width = ((currentIndex + 1) / phrases.length) * 100 + '%';
+        }
+
+        function setupDragDrop() {
+            const card = document.getElementById('phrase-card');
+            const zones = ['trash-zone', 'treasure-zone'];
+
+            card.addEventListener('dragstart', dragStart);
+            card.addEventListener('dragend', dragEnd);
+
+            zones.forEach(zoneId => {
+                const zone = document.getElementById(zoneId);
+                zone.addEventListener('dragover', dragOver);
+                zone.addEventListener('dragleave', dragLeave);
+                zone.addEventListener('drop', drop);
+            });
+        }
+
+        function dragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+        }
+
+        function dragEnd(e) {
+            draggedElement.classList.remove('dragging');
+            document.getElementById('trash-zone').classList.remove('active');
+            document.getElementById('treasure-zone').classList.remove('active');
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            this.classList.add('active');
+        }
+
+        function dragLeave(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+
+            const zoneType = this.id.includes('trash') ? 'trash' : 'treasure';
+            const isCorrect = currentPhrase.correct === zoneType;
+
+            showFeedback(isCorrect);
+
+            if (isCorrect) {
+                score++;
+            } else {
+                lives--;
+            }
+
+            updateUI();
+            currentIndex++;
+
+            setTimeout(() => {
+                if (lives > 0 && currentIndex < phrases.length) {
+                    showNextPhrase();
+                } else if (lives <= 0) {
+                    endGame();
+                } else {
+                    showNextPhrase();
+                }
+            }, 800);
+        }
+
+        function showFeedback(isCorrect) {
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback';
+                feedback.textContent = '✅ Doğru!';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.textContent = '❌ Oops!';
+            }
+            feedback.style.display = 'flex';
+            setTimeout(() => {
+                feedback.style.display = 'none';
+            }, 800);
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = '❤️ '.repeat(lives).trim();
+        }
+
+        function endGame() {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('results-screen').classList.add('active');
+            document.getElementById('game-header').style.display = 'none';
+
+            document.getElementById('final-score').textContent = `${score}/${phrases.length}`;
+
+            if (score === 8) {
+                document.getElementById('result-title').textContent = '🎉 Mükemmel Oyun!';
+                document.getElementById('result-message').textContent = 'Öğrenci merkezli geri bildirimin ustasısın!';
+            } else if (score >= 6) {
+                document.getElementById('result-title').textContent = '😊 Harika İş!';
+                document.getElementById('result-message').textContent = 'Destekleyici geri bildirimin önemini anlıyorsun!';
+            } else if (score >= 4) {
+                document.getElementById('result-title').textContent = '💪 İyi Çalıştı!';
+                document.getElementById('result-message').textContent = 'Doğru yoldasın. Pratik yapmaya devam et!';
+            } else {
+                document.getElementById('result-title').textContent = '📚 Öğrenmeye Devam Et!';
+                document.getElementById('result-message').textContent = 'Bu, öğrenci tutunması için önemli bir beceridir!';
+            }
+        }
+
+        function resetGame() {
+            document.getElementById('results-screen').classList.remove('active');
+            document.getElementById('instructions-screen').classList.add('active');
+            document.getElementById('game-header').style.display = 'none';
+            document.getElementById('progress').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
