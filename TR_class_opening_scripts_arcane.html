@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sınıf Açılış Senaryoları - Kodland</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: rgba(15, 20, 40, 0.9);
+            border-bottom: 2px solid #00d9ff;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            color: #00d9ff;
+            text-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(255, 0, 110, 0.2);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #00d9ff;
+            font-weight: 500;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            padding: 30px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.4s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-title {
+            text-align: center;
+        }
+
+        .slide-title h2 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #00d9ff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .slide-title p {
+            font-size: 18px;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .question-container {
+            background: rgba(157, 78, 221, 0.08);
+            border: 2px solid #9d4edd;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+        }
+
+        .question-label {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 16px;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            position: relative;
+        }
+
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 16px;
+            border: 2px solid #9d4edd;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+            color: #e0e0e0;
+            background: rgba(157, 78, 221, 0.05);
+        }
+
+        .option-label::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            border: 2px solid #00d9ff;
+            border-radius: 2px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            background: rgba(0, 217, 255, 0.05);
+            box-shadow: 0 0 6px rgba(0, 217, 255, 0.1);
+        }
+
+        .option input[type="radio"]:checked + .option-label {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+            color: #00d9ff;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.15);
+        }
+
+        .option input[type="radio"]:checked + .option-label::before {
+            background: #00d9ff;
+            box-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
+            border-color: #00d9ff;
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0e27;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .result-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .result-title {
+            font-size: 40px;
+            font-weight: 800;
+            color: #00d9ff;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .result-subtitle {
+            font-size: 16px;
+            color: #9d4edd;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .result-section {
+            background: rgba(157, 78, 221, 0.08);
+            border: 2px solid #9d4edd;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+        }
+
+        .result-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 16px;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .script-step {
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.3);
+        }
+
+        .script-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-num {
+            display: inline-block;
+            background: #9d4edd;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 8px;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .script-step > div:last-child {
+            font-size: 13px;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .why-content {
+            font-size: 13px;
+            color: #b0b0b0;
+            line-height: 1.7;
+        }
+
+        footer {
+            background: rgba(15, 20, 40, 0.9);
+            border-top: 2px solid #00d9ff;
+            padding: 16px 30px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 20, 40, 0.9);
+            border-top: 2px solid #00d9ff;
+            padding: 16px 30px;
+        }
+
+        .progress {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #00d9ff;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 24px;
+            border: 2px solid #00d9ff;
+            background: transparent;
+            color: #00d9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover:not(:disabled) {
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #666;
+            color: #666;
+            text-shadow: none;
+        }
+
+        .secondary {
+            border-color: #9d4edd;
+            color: #9d4edd;
+            text-shadow: 0 0 5px rgba(157, 78, 221, 0.2);
+        }
+
+        .secondary:hover:not(:disabled) {
+            background: rgba(157, 78, 221, 0.1);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">KODLAND</div>
+            <h1>Sınıf Açılış Rehberi</h1>
+            <p class="subtitle">Kendi senaryonuzu bulun</p>
+        </header>
+
+        <div class="main">
+            <div class="slide active">
+                <div class="slide-title">
+                    <h2>Merhaba! 👋</h2>
+                    <p>Sınıfınıza mükemmel açılış yapacağız.</p>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">1️⃣ Sınıfınız kaç öğrenci?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="p1" name="p" value="small">
+                            <label for="p1" class="option-label">Küçük (1-3 öğrenci)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="p2" name="p" value="medium">
+                            <label for="p2" class="option-label">Orta (4-8 öğrenci)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="p3" name="p" value="large">
+                            <label for="p3" class="option-label">Büyük (9+ öğrenci)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">2️⃣ Onlara kaç ders öğrettiniz?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="t1" name="t" value="first">
+                            <label for="t1" class="option-label">İlk ders (yeni grup)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="t2" name="t" value="short">
+                            <label for="t2" class="option-label">Kısa seri (2-4 ders)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="t3" name="t" value="ongoing">
+                            <label for="t3" class="option-label">Devam eden grup (5+ ders)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">3️⃣ Grubunuzun havası nasıl?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="i1" name="i" value="shy">
+                            <label for="i1" class="option-label">Utangaç ve içe kapanık</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="i2" name="i" value="chatty">
+                            <label for="i2" class="option-label">Konuşkan ve enerjik</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="i3" name="i" value="gaming">
+                            <label for="i3" class="option-label">Oyun ve eğlence tutkunu</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="i4" name="i" value="mixed">
+                            <label for="i4" class="option-label">Her şeyin karışımı</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="question-container">
+                    <div class="question-label">4️⃣ Sınıf açılışında kendinizi ne kadar rahat hissediyorsunuz?</div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="c1" name="c" value="new">
+                            <label for="c1" class="option-label">Yeni—tam metin verin</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="c2" name="c" value="comf">
+                            <label for="c2" class="option-label">Rahat—rehberlik verin</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="c3" name="c" value="exp">
+                            <label for="c3" class="option-label">Deneyimli—yaklaşımımı doğrulayın</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <div class="result-content">
+                    <div class="result-title" id="result-title"></div>
+                    <div class="result-subtitle" id="result-subtitle"></div>
+
+                    <div class="result-section">
+                        <div class="result-section-title">📍 Senaryonuz</div>
+                        <div id="steps"></div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-section-title">✨ Neden İşe Yarıyor</div>
+                        <div class="why-content" id="why-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="progress">
+                <span id="current-slide">1</span> / <span id="total-slides">6</span>
+            </div>
+            <div class="button-group">
+                <button class="secondary" id="prev-btn" onclick="prevSlide()" disabled>← Geri</button>
+                <button id="next-btn" onclick="nextSlide()">İleri →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scripts = {
+            'shy-short-code-new': {
+                title: 'Sıcak Bir Karşılama Kontrol',
+                time: '1-2 dakika',
+                steps: [
+                    {num: '1', title: 'Hoşgeldiniz & Kamera', text: '"Merhaba öğrencilerim, sizi görmekten çok mutluyum." [Kameraya bak, gülümse] Bir kalp tepkisi put.'},
+                    {num: '2', title: 'Enerji Kontrolü', text: '"Bugünkü enerjimiz nasıl? Hangi tepkiyi koyacaksınız?" 10-15 saniye bekle.'},
+                    {num: '3', title: 'Kutlama', text: '"Matias, senin mutlu yüzünü görüyorum! Sofia, heyecanlı? Bu benim sevdiğim."'}
+                ],
+                why: 'Utangaç öğrencilere gerek var: (1) Onu görmekten gerçekten mutlu olduğunu göster, (2) Konuşmadan güvenli katılım, (3) İsimle bireysel onay, (4) Hüküm görmeksizin ortam.'
+            },
+            'chatty-short-code-new': {
+                title: 'Yüksek Enerji Açılışı',
+                time: '1-2 dakika',
+                steps: [
+                    {num: '1', title: 'Patlaycı Hoşgeldiniz', text: '"HEY! Seni görmekten GERÇEKTEN heyecanlıyım. Buradaki enerji bulaşıcı!"'},
+                    {num: '2', title: 'Hızlı Meydan Okuma', text: '"Geçen hafta kim MUHTEŞEM bir şey yaptı? BAN SÖYLEş! Düşünme—sadece söyle!"'},
+                    {num: '3', title: 'Kutlama', text: '"EVET! Bu YARATICI düşünüş tam da bugün ihtiyacın olan şey."'}
+                ],
+                why: 'Konuşkan öğrenciler ENERJİ ve HIZDAN beslenirler. Hızlı tartışmalar, yüksek sesle kutlama ve rekabetçi çerçeve meşguliyeti yüksek tutar.'
+            },
+            'mixed-short-code-new': {
+                title: 'Kapsayıcı Enerji',
+                time: '1-2 dakika',
+                steps: [
+                    {num: '1', title: 'Sıcak Karşılama', text: '"Herkese merhaba. Sizin her biriniz yeni bir şey öğrenmeye buradasınız."'},
+                    {num: '2', title: 'Enerji Kontrolü (Tüm Yollar)', text: '"Kendinizi nasıl hissediyorsunuz? Tepki, yaz, ya da el kaldır. Her şekilde tamam."'},
+                    {num: '3', title: 'Karışık Kutlama', text: '"Mükemmel! Herkes farklı şekillerde. Herkes gerekli."'}
+                ],
+                why: 'Karışık gruplar ÇOKLU yanıt yolu gerektirir (tepkiler, sohbet, el kaldırma). Her stili eşit şekilde kutla.'
+            }
+        };
+
+        let currentSlide = 0;
+        const totalSlides = 6;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            if (n >= slides.length) n = slides.length - 1;
+            if (n < 0) n = 0;
+            currentSlide = n;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n].classList.add('active');
+
+            document.getElementById('current-slide').textContent = n + 1;
+            document.getElementById('prev-btn').disabled = n === 0;
+            document.getElementById('next-btn').textContent = n === totalSlides - 1 ? 'Oluştur ✨' : 'İleri →';
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else {
+                generateScript();
+            }
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function generateScript() {
+            const p = document.querySelector('input[name="p"]:checked')?.value;
+            const t = document.querySelector('input[name="t"]:checked')?.value;
+            const i = document.querySelector('input[name="i"]:checked')?.value;
+            const c = document.querySelector('input[name="c"]:checked')?.value;
+
+            if (!p || !t || !i || !c) return;
+
+            const key = `${p}-${t}-${i}-${c}`;
+            const script = scripts[key] || scripts['mixed-short-code-new'];
+
+            document.getElementById('result-title').textContent = script.title;
+            document.getElementById('result-subtitle').textContent = `⏱️ ${script.time}`;
+
+            let stepsHTML = '';
+            script.steps.forEach(step => {
+                stepsHTML += `
+                    <div class="script-step">
+                        <span class="step-num">Adım ${step.num}</span>
+                        <div class="step-title">${step.title}</div>
+                        <div>"${step.text}"</div>
+                    </div>
+                `;
+            });
+            document.getElementById('steps').innerHTML = stepsHTML;
+            document.getElementById('why-box').textContent = script.why;
+        }
+
+        showSlide(0);
+    </script>
+</body>
+</html>
