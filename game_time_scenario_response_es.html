@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Time: Respuesta de Escenarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(157, 78, 221, 0.06) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: rgba(15, 20, 40, 0.95);
+            border-bottom: 2px solid #00d9ff;
+            padding: 6px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 8px;
+            font-weight: 800;
+            color: #00d9ff;
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+        }
+
+        h1 {
+            font-size: 13px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            gap: 15px;
+            margin-top: 3px;
+        }
+
+        .score-box {
+            background: rgba(0, 217, 255, 0.1);
+            padding: 2px 8px;
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+            font-weight: 600;
+        }
+
+        .lives-box {
+            color: #ff006e;
+            font-weight: 600;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            position: relative;
+            overflow: hidden;
+            gap: 8px;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Instructions Screen */
+        .instructions-screen {
+            text-align: center;
+        }
+
+        .instructions-screen h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #00d9ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .instructions-content {
+            background: rgba(157, 78, 221, 0.08);
+            border: 2px solid #9d4edd;
+            padding: 16px;
+            max-width: 700px;
+            margin-bottom: 16px;
+            border-radius: 0;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.1);
+        }
+
+        .instruction-item {
+            text-align: left;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #d0d0d0;
+            margin-bottom: 8px;
+        }
+
+        .instruction-item strong {
+            color: #00d9ff;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            flex-direction: column;
+            justify-content: center;
+            padding: 8px;
+            gap: 10px;
+        }
+
+        .case-section {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .case-card {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(157, 78, 221, 0.1) 100%);
+            border: 2px solid #9d4edd;
+            padding: 14px;
+            max-width: 600px;
+            border-radius: 0;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);
+            text-align: left;
+        }
+
+        .case-title {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            color: #00d9ff;
+            margin-bottom: 6px;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.2);
+        }
+
+        .case-text {
+            font-size: 10px;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .option-btn {
+            background: rgba(157, 78, 221, 0.08);
+            border: 2px solid #9d4edd;
+            padding: 10px;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .option-label {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #00d9ff;
+        }
+
+        .option-text {
+            font-size: 9px;
+            color: #d0d0d0;
+            line-height: 1.3;
+        }
+
+        .option-btn:hover {
+            background: rgba(0, 217, 255, 0.1);
+            border-color: #00d9ff;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .option-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+        }
+
+        .results-screen h2 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .score-display {
+            font-size: 36px;
+            font-weight: 800;
+            color: #00d9ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .message {
+            font-size: 12px;
+            color: #d0d0d0;
+            margin-bottom: 16px;
+            max-width: 450px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00d9ff 0%, #9d4edd 100%);
+            color: #0a0e27;
+            border: 2px solid #ff006e;
+            padding: 9px 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Exo 2', sans-serif;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.25);
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 217, 255, 0.95);
+            color: #0a0e27;
+            padding: 16px 24px;
+            border: 2px solid #00d9ff;
+            text-align: center;
+            z-index: 1000;
+            font-weight: 700;
+            font-size: 14px;
+            display: none;
+            animation: popIn 0.3s ease;
+            border-radius: 0;
+            max-width: 350px;
+        }
+
+        .feedback.incorrect {
+            background: rgba(255, 0, 110, 0.95);
+            border-color: #ff006e;
+        }
+
+        .feedback-text {
+            margin-top: 6px;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 2px;
+            background: rgba(157, 78, 221, 0.2);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d9ff 0%, #9d4edd 100%);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🎮 KODLAND - GAME TIME</div>
+            <h1>Respuesta de Escenarios</h1>
+            <div class="game-header" id="game-header" style="display: none;">
+                <div class="score-box">Puntos: <span id="score">0</span>/2</div>
+                <div class="lives-box">Vidas: <span id="lives">❤️ ❤️ ❤️</span></div>
+            </div>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress" style="width: 0%"></div>
+        </div>
+
+        <div class="main">
+            <!-- Instructions Screen -->
+            <div class="screen instructions-screen active" id="instructions-screen">
+                <h2>📚 Cómo Jugar</h2>
+                <div class="instructions-content">
+                    <div class="instruction-item">
+                        <strong>📖 Tu Tarea:</strong> Lee cada escenario cuidadosamente
+                    </div>
+                    <div class="instruction-item">
+                        <strong>✨ Elige Sabiamente:</strong> Elige la respuesta que promueve un enfoque individualizado
+                    </div>
+                    <div class="instruction-item">
+                        <strong>🎯 Lo Que Importa:</strong> Individualizado significa reconocer el ritmo, necesidades y dificultades de cada estudiante
+                    </div>
+                    <div class="instruction-item">
+                        <strong>❤️ Vidas:</strong> Tenés 3 vidas. Las respuestas incorrectas cuestan 1 vida
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button onclick="startGame()">🎮 COMENZAR JUEGO</button>
+                </div>
+            </div>
+
+            <!-- Game Screen -->
+            <div class="screen game-screen" id="game-screen">
+                <div class="case-section">
+                    <div class="case-card">
+                        <div class="case-title" id="case-title"></div>
+                        <div class="case-text" id="case-text"></div>
+                    </div>
+                </div>
+
+                <div class="options-container">
+                    <button class="option-btn" onclick="selectOption('a')" id="option-a">
+                        <span class="option-label">A:</span>
+                        <span class="option-text" id="option-a-text"></span>
+                    </button>
+                    <button class="option-btn" onclick="selectOption('b')" id="option-b">
+                        <span class="option-label">B:</span>
+                        <span class="option-text" id="option-b-text"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="screen results-screen" id="results-screen">
+                <h2 id="result-title"></h2>
+                <div class="score-display" id="final-score"></div>
+                <div class="message" id="result-message"></div>
+                <div class="buttons">
+                    <button onclick="resetGame()">🔄 Jugar de Nuevo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        const cases = [
+            {
+                id: 1,
+                title: 'Caso 1: Ritmos Diferentes',
+                text: 'Lucas acaba de terminar su circuito y está listo para seguir adelante. Pero Sofía aún está trabajando con los conceptos básicos y sigue cometiendo pequeños errores. Se ve claramente frustrada. El instinto es avanzar con Lucas, pero eso deja a Sofía atrás, y la frustración es exactamente donde los estudiantes comienzan a cuestionarse si pertenecen al curso.',
+                optionA: 'Reconoce el trabajo de Lucas e inmediatamente comienza el próximo desafío. Deja que Sofía trabaje de forma independiente y se ponga al día cuando termine.',
+                optionB: 'Celebra brevemente a Lucas, luego chequea silenciosamente con Sofía. Ofrece apoyo y avanza juntos cuando todos estén seguros.',
+                correct: 'b',
+                explanation: 'La Opción B reconoce necesidades individuales. Evita que los estudiantes frustrados se sientan dejados atrás, un problema clave de retención.'
+            },
+            {
+                id: 2,
+                title: 'Caso 2: Retroalimentación de Calidad',
+                text: 'María acaba de terminar de construir su primer circuito de redstone. La estructura es limpia y lógica. Te está mirando, esperando retroalimentación. Otros estudiantes aún están trabajando.',
+                optionA: '"María, noté cómo organizaste esos repetidores en línea—eso es pensamiento estratégico. Entendiste el flujo de poder perfectamente. Así es como los codificadores reales estructuran la lógica. ¡Excelente!"',
+                optionB: '"Buen trabajo, María. Pasa a la siguiente tarea."',
+                correct: 'a',
+                explanation: 'La Opción A muestra retroalimentación individualizada y específica que reconoce su logro único y construye confianza.'
+            }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let lives = 3;
+        let answered = false;
+
+        function startGame() {
+            document.getElementById('instructions-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            document.getElementById('game-header').style.display = 'flex';
+            
+            currentIndex = 0;
+            score = 0;
+            lives = 3;
+            showNextCase();
+        }
+
+        function showNextCase() {
+            if (currentIndex >= cases.length) {
+                endGame();
+                return;
+            }
+
+            const caseData = cases[currentIndex];
+            document.getElementById('case-title').textContent = caseData.title;
+            document.getElementById('case-text').textContent = caseData.text;
+            document.getElementById('option-a-text').textContent = caseData.optionA;
+            document.getElementById('option-b-text').textContent = caseData.optionB;
+            document.getElementById('progress').style.width = ((currentIndex + 1) / cases.length) * 100 + '%';
+
+            document.getElementById('option-a').classList.remove('selected', 'disabled');
+            document.getElementById('option-b').classList.remove('selected', 'disabled');
+            answered = false;
+        }
+
+        function selectOption(choice) {
+            if (answered) return;
+            answered = true;
+
+            const currentCase = cases[currentIndex];
+            const isCorrect = choice.toLowerCase() === currentCase.correct;
+
+            document.getElementById('option-a').classList.add('disabled');
+            document.getElementById('option-b').classList.add('disabled');
+            document.getElementById(`option-${choice}`).classList.add('selected');
+
+            showFeedback(isCorrect, currentCase.explanation);
+
+            if (isCorrect) {
+                score++;
+            } else {
+                lives--;
+            }
+
+            updateUI();
+            currentIndex++;
+
+            setTimeout(() => {
+                if (lives > 0 && currentIndex < cases.length) {
+                    showNextCase();
+                } else if (lives <= 0) {
+                    endGame();
+                } else {
+                    showNextCase();
+                }
+            }, 1800);
+        }
+
+        function showFeedback(isCorrect, explanation) {
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.className = 'feedback';
+                feedback.innerHTML = '✅ ¡Correcto!<div class="feedback-text">' + explanation + '</div>';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '❌ No exactamente.<div class="feedback-text">' + explanation + '</div>';
+            }
+            feedback.style.display = 'flex';
+            setTimeout(() => {
+                feedback.style.display = 'none';
+            }, 1800);
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = '❤️ '.repeat(lives).trim();
+        }
+
+        function endGame() {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('results-screen').classList.add('active');
+            document.getElementById('game-header').style.display = 'none';
+
+            document.getElementById('final-score').textContent = `${score}/${cases.length}`;
+
+            if (score === cases.length) {
+                document.getElementById('result-title').textContent = '🎉 ¡Perfecto!';
+                document.getElementById('result-message').textContent = '¡Realmente entiendes la enseñanza individualizada! ¡Tus estudiantes se sentirán vistos y apoyados!';
+            } else if (score === 1) {
+                document.getElementById('result-title').textContent = '💪 ¡Buen Intento!';
+                document.getElementById('result-message').textContent = 'You\'re on the right track. Remember: individualization means meeting each student where they are.';
+            } else {
+                document.getElementById('result-title').textContent = '📚 ¡Sigue Aprendiendo!';
+                document.getElementById('result-message').textContent = '¡La enseñanza individualizada construye retención y confianza. ¡Sigue practicando!';
+            }
+        }
+
+        function resetGame() {
+            document.getElementById('results-screen').classList.remove('active');
+            document.getElementById('instructions-screen').classList.add('active');
+            document.getElementById('game-header').style.display = 'none';
+            document.getElementById('progress').style.width = '0%';
+        }
+    </script>
+</body>
+</html>
